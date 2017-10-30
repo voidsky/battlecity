@@ -1,0 +1,47 @@
+
+<!doctype html> 
+<html lang="en"> 
+<head> 
+	<meta charset="UTF-8" />
+	<title>Battlecity</title>
+	<script type="text/javascript" src="js/phaser.js"></script>
+    <style type="text/css">
+        body {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+<script type="text/javascript">
+
+var game = new Phaser.Game(512, 480, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+
+
+function preload() {
+    game.load.tilemap('tilemap', 'assets/tilemaps/maps/battlecity_map1.json', null, Phaser.Tilemap.TILED_JSON);
+    game.load.image('tiles16x16', 'assets/tilemaps/tiles/battlecity_general.png');
+}
+
+var map;
+var layer;
+var p;
+var cursors;
+
+function create() {
+    game.stage.backgroundColor = '#787878';
+
+    map = game.add.tilemap('tilemap');
+    map.addTilesetImage('battlecity','tiles16x16');
+    
+    layer = map.createLayer('Ground');
+    layer.scale.set(2);
+}
+
+function update() {
+}
+
+</script>
+
+</body>
+</html>
