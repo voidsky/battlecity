@@ -21,12 +21,14 @@ var game = new Phaser.Game(512, 480, Phaser.AUTO, '', { preload: preload, create
 function preload() {
     game.load.tilemap('tilemap', 'assets/tilemaps/maps/battlecity_map1.json', null, Phaser.Tilemap.TILED_JSON);
     game.load.image('tiles16x16', 'assets/tilemaps/tiles/battlecity_general.png');
+    // load spritesheet for our player and enemies, all of them use same spritesheet
+    game.load.spritesheet('tanks', 'assets/tilemaps/tiles/battlecity_general.png', 16, 16);
 }
 
 var map;
 var layer;
-var p;
-var cursors;
+var player_tank;
+var cursors; 
 
 function create() {
     game.stage.backgroundColor = '#787878';
@@ -36,9 +38,53 @@ function create() {
     
     layer = map.createLayer('Ground');
     layer.scale.set(2);
+    //create cursor key handler
+    cursors = game.input.keyboard.createCursorKeys();
+    //create our player tank, position it at x,y and use sprite sheet 'tanks'
+    player_tank = this.game.add.sprite(128, 448, 'tanks');
+    //enable physics for our player sprite so we could move it etc
+    game.physics.arcade.enable(player_tank);
+    //set initial frame for our player sprite
+    player_tank.frame = 0;
+    //scale our player sprite as all our world is scaled by 2
+    player_tank.scale.set(2);
+    //define movement animations for our player - up, down etc, provide sprite numbers, timing,  
+    player_tank.animations.add('left', [2,3], 10, true);
+    player_tank.animations.add('right', [6,7], 10, true);
+    player_tank.animations.add('up', [0,1], 10, true);
+    player_tank.animations.add('down', [4,5], 10, true);
 }
 
 function update() {
+    
+    
+    if (cursors.left.isDown)
+    {
+        //if left cursor is down - play left animation, add velocity
+        player_tank.animations.play('left');
+        player_tank.body.velocity.x = -100;
+    }
+    else if (cursors.right.isDown)
+    {
+        player_tank.animations.play('right');
+        player_tank.body.velocity.x = 100;
+    }
+    else if (cursors.up.isDown)
+    {
+        player_tank.animations.play('up');
+        player_tank.body.velocity.y = -100;
+    }
+    else if (cursors.down.isDown)
+    {
+        player_tank.animations.play('down');
+         player_tank.body.velocity.y = 100;
+    } 
+    else 
+    {
+        player_tank.animations.stop();
+        player_tank.body.velocity.x = 0;
+        player_tank.body.velocity.y = 0;
+    }
 }
 
 </script>
