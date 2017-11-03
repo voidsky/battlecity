@@ -29,18 +29,35 @@ var map;
 var layer;
 var player_tank;
 var cursors; 
+var marker;
+var currentDataString;
 
 function create() {
     game.stage.backgroundColor = '#787878';
 
     map = game.add.tilemap('tilemap');
-    map.addTilesetImage('battlecity','tiles16x16');
+    map.addTilesetImage('battlecity','tiles16x16');    
     map.setCollisionBetween(1, 10000);
     
     layer = map.createLayer('Ground');
     layer.setScale(2);
     layer.debug = true;
     layer.resizeWorld();
+
+    var tiles = layer.getTiles(0,0,map.width*32, map.height*32)    
+
+    tiles.forEach(function(tile) {    
+        if(tile.index == 17)    {         
+            //currentDataString = JSON.stringify( tile.properties );
+            //console.log("tile", tile.body);
+            //console.log("tile properties", currentDataString);
+
+            //tile.width = 8;
+            //tile.height = 8;
+            //tile.x = 16;
+            
+        }       
+    } )
 
     //create cursor key handler
     cursors = game.input.keyboard.createCursorKeys();
@@ -56,6 +73,15 @@ function create() {
     player_tank.animations.add('up', [0,1], 10, true);
     player_tank.animations.add('down', [4,5], 10, true);
     
+    //  Our painting marker
+    marker = game.add.graphics();
+    marker.lineStyle(2, 0xffffff, 1);
+    marker.drawRect(0, 0, 32, 32);
+
+    game.input.addMoveCallback(updateMarker, this);
+
+    game.input.onDown.add(getTileProperties, this);
+
 }
 
 function update() {
@@ -94,6 +120,27 @@ function update() {
     }
 }
 
+function getTileProperties() {
+
+    var x = layer.getTileX(game.input.activePointer.worldX)*16;
+    var y = layer.getTileY(game.input.activePointer.worldY)*16;
+
+    var tile = map.getTile(x, y, layer);
+    
+    // Note: JSON.stringify will convert the object tile properties to a string
+    currentDataString = JSON.stringify( tile.properties );
+
+    tile.properties.wibble = true;
+
+}
+
+function updateMarker() {
+
+    marker.x = layer.getTileX(game.input.activePointer.worldX) * 16;
+    marker.y = layer.getTileY(game.input.activePointer.worldY) * 16;
+
+}
+
 function render() {
 
     //  Useful debug things you can turn on to see what's happening
@@ -104,6 +151,12 @@ function render() {
     game.debug.bodyInfo(player_tank, 10, 10);
 
     game.debug.body(player_tank);
+
+    if(currentDataString){
+        game.debug.text('Tile properties: ' + currentDataString, 16, 550);
+    } else {
+        game.debug.text("Click on a tile to reveal the properties of the tile", 16, 550);
+    }    
 
 }
 
